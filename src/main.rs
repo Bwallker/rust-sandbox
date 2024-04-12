@@ -1,5 +1,5 @@
-mod day15;
-mod lib;
+use f128::f128;
+
 fn main() {
-    day15::main();
+    println!("{}", f128::MAX);
 }

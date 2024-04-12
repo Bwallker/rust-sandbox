@@ -35,7 +35,7 @@ pub fn main() {
 
 fn run_game(data: String) -> usize {
     let mut nodes = init(&data);
-    let count = visit_all_neighbours("start", &mut nodes, 2, HashSet::new());
+    let count = visit_all_neighbors("start", &mut nodes, 2, HashSet::new());
 
     println!("{count}");
     count
@@ -43,10 +43,10 @@ fn run_game(data: String) -> usize {
 
 fn init(data: &str) -> HashMap<&str, Node> {
     let mut nodes = find_all_nodes(data);
-    find_all_neighbours(&mut nodes, data);
+    find_all_neighbors(&mut nodes, data);
     nodes
 }
-fn visit_all_neighbours<'a>(
+fn visit_all_neighbors<'a>(
     name: &'a str,
     nodes: *mut HashMap<&'a str, Node<'a>>,
     mut part: usize,
@@ -70,10 +70,10 @@ fn visit_all_neighbours<'a>(
             }
         }
         let mut count = 0;
-        for neighbour in (*node).connections.iter() {
+        for neighbor in (*node).connections.iter() {
             let mut new_set = visited_caves.clone();
             new_set.insert(name);
-            count += visit_all_neighbours(neighbour, nodes, part, new_set);
+            count += visit_all_neighbors(neighbor, nodes, part, new_set);
         }
         count
     }
@@ -95,7 +95,7 @@ fn find_all_nodes(data: &str) -> HashMap<&str, Node> {
     res
 }
 
-fn find_all_neighbours<'a>(nodes: &mut HashMap<&'a str, Node<'a>>, data: &'a str) {
+fn find_all_neighbors<'a>(nodes: &mut HashMap<&'a str, Node<'a>>, data: &'a str) {
     for line in data.lines() {
         let mut split = line.split("-");
         let first_node_name = split.next().unwrap().trim();

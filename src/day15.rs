@@ -36,7 +36,7 @@ fn find_best_path_recurse(
     data: &Vec<Vec<u8>>,
     current_coord: Coordinate,
     current_score: u32,
-    mut best_score: u32,
+    best_score: u32,
     previous_coords: &mut HashSet<Coordinate>,
 ) -> u32 {
     if data
@@ -56,28 +56,14 @@ fn find_best_path_recurse(
     }
 
     if current_coord.x == data[0].len() - 1 && current_coord.y == data.len() - 1 {
-        best_score = min(best_score, current_score);
+        return min(best_score, current_score);
     }
     let x = current_coord.x;
     let y = current_coord.y;
-    let up = find_best_path_recurse(
-        data,
-        Coordinate::new(x, y.wrapping_sub(1)),
-        current_score + data[x][y] as u32,
-        best_score,
-        previous_coords,
-    );
+
     let right = find_best_path_recurse(
         data,
         Coordinate::new(x + 1, y),
-        current_score + data[x][y] as u32,
-        best_score,
-        previous_coords,
-    );
-
-    let left = find_best_path_recurse(
-        data,
-        Coordinate::new(x.wrapping_sub(1), y),
         current_score + data[x][y] as u32,
         best_score,
         previous_coords,
@@ -91,8 +77,7 @@ fn find_best_path_recurse(
         previous_coords,
     );
 
-    let mut best = min(up, down);
-    best = min(best, left);
+    let mut best = down;
     best = min(best, right);
     best
 }
@@ -116,5 +101,7 @@ fn parse_data() -> Vec<Vec<u8>> {
 #[cfg(test)]
 mod tests {
     #[test]
-    fn my_test_case() {}
+    fn my_test_case() {
+        println!("Entered my testcase");
+    }
 }
