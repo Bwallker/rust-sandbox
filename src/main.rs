@@ -1,59 +1,41 @@
-use std::fmt::Debug;
-use union_find::{UnionFind, UnionFindByHeight, UnionFindBySize, UnionFindBySizeWithCompression};
+mod network_flow;
 
-mod union_find;
+use network_flow::{max_flow, NetworkGraph};
 
-fn make_insertions<UF: UnionFind + Debug>(
-    uf: &mut UF,
-    insertions: &[(usize, usize)],
-    algorithm_name: &str,
-) {
-    println!("Using algorithm: {}", algorithm_name);
-    for (a, b) in insertions.iter().copied() {
-        uf.union(a, b);
-        println!("After inserting ({a}, {b}): {uf:?}");
-    }
-    println!("Number of roots: {}", uf.roots().count());
-    println!("Roots: {:?}", uf.roots().collect::<Vec<_>>());
-    println!();
-    println!();
-}
+fn construct_network_graph() -> NetworkGraph {
+    let mut graph = NetworkGraph::new();
+    graph.add_edge("s", "a", 7);
+    graph.add_edge("s", "c", 4);
 
-fn perform_find(uf: &mut UnionFindBySizeWithCompression, x: usize) {
-    let root = uf.find(x);
-    println!("Root of {x} is {root}");
-    println!("After finding root of {x}: {uf:?}");
-    println!();
+    graph.add_edge("a", "b", 4);
+    graph.add_edge("a", "d", 2);
+
+    graph.add_edge("b", "e", 3);
+    graph.add_edge("b", "c", 2);
+
+    graph.add_edge("c", "e", 2);
+    graph.add_edge("c", "g", 3);
+
+    graph.add_edge("d", "f", 4);
+
+    graph.add_edge("e", "f", 5);
+    graph.add_edge("e", "g", 3);
+    graph.add_edge("e", "t", 4);
+
+    graph.add_edge("f", "t", 7);
+
+    graph.add_edge("g", "t", 3);
+
+    graph.add_node("t");
+
+    graph
 }
 
 fn main() {
-    let mut uf = UnionFindBySize::new(9, 1);
-    make_insertions(
-        &mut uf,
-        &[(1, 2), (3, 4), (9, 8), (1, 7), (3, 5), (6, 3), (9, 3)],
-        "UnionFindBySize",
-    );
-    let mut uf = UnionFindByHeight::new(9, 1);
-    make_insertions(
-        &mut uf,
-        &[
-            (4, 1),
-            (3, 4),
-            (8, 9),
-            (2, 5),
-            (7, 2),
-            (8, 2),
-            (6, 4),
-            (4, 8),
-        ],
-        "UnionFindByHeight",
-    );
-    let mut uf = UnionFindBySizeWithCompression::from_nodes_and_starting_index(
-        vec![-5, 0, -12, 2, 2, 2, 0, 0, 7, 2, 2, 2, 2, 2, 13, 13, 15].into_boxed_slice(),
-        1,
-    );
-    perform_find(&mut uf, 9);
-    perform_find(&mut uf, 13);
-    perform_find(&mut uf, 15);
-    perform_find(&mut uf, 17);
+    let graph = construct_network_graph();
+
+    let result = max_flow(&graph, "s", "t");
+    println!("Max flow: {}", result.flow);
+    println!("Flow map: {:?}", result.flow_map);
+    println!("Residual map: {:?}", result.residual_map);
 }
